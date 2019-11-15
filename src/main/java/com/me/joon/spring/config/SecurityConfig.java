@@ -16,7 +16,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 			.mvcMatchers("/admin").hasRole(ProjectConst.ADMIN_ROLE)
-			.mvcMatchers("/", "/infomation").permitAll()
+			.mvcMatchers("/", "/infomation", "/account/**").permitAll()
 			.anyRequest().hasAnyRole(ProjectConst.MEMBER_ROLE, ProjectConst.ADMIN_ROLE)
 			.and()
 		.formLogin()
@@ -25,12 +25,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 			
 	}
 
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication()
-			.withUser("joonAdmin").password("{noop}123").roles(ProjectConst.ADMIN_ROLE).and()
-			.withUser("joonUser").password("{noop}123").roles(ProjectConst.MEMBER_ROLE).and()
-			;
-	}
+	
 }
  
