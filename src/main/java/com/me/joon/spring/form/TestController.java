@@ -19,9 +19,9 @@ public class TestController {
 	@GetMapping("/admin")
 	public String admin(Model model, Principal principal) {
 		if (principal == null) {
-			model.addAttribute("msg", "Hello yea-ryoung");
+			model.addAttribute("msg", "Hello nonUser");
 		} else {
-			model.addAttribute("msg", "Hello " + principal.getName() + ", you are admin!");
+			model.addAttribute("msg", "Hello " + principal.getName());
 		}
 		
 		return "admin";
