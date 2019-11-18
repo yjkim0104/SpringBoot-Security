@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import org.springframework.security.test.context.support.WithMockUser;
 
 @Retention(RUNTIME)
-@WithMockUser(username = "joonAdminr", roles = "ADMIN")
+@WithMockUser(username = "joonUser", roles = "USER")
 public @interface WithUser {
 
 }
