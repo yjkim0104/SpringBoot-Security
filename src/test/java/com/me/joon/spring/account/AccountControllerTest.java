@@ -4,10 +4,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -21,6 +18,8 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -37,72 +36,61 @@ class AccountControllerTest {
 	private static String userName = "joonUser";
 	private static String password = "123";
 	
-	
-	@Test
-	@Order(1)
-	public void a1_AddUser() {
-		System.out.println("### a1_AddUser test");
+	private Account addUser() {
+		System.out.println("### AddUser test");
 		
 		Account account = new Account();
 		account.setUserName(userName);
 		account.setPassword(password);
 		account.setRole("USER");
 		
-		accountService.createUser(account);
+		return accountService.createUser(account);
 	}
 	
 	@Test
-	@Order(2)
 	@WithAnonymousUser
 	public void index_anoymous() throws Exception {
 		System.out.println("### index_anoymous test");
 		
 		mockMvc.perform(get("/"))
-//			.andDo(print())
 			.andExpect(status().isOk())
 		;
 	}
 
 	@Test
-	@Order(2)
 	@WithUser
 	public void index_user() throws Exception {
 		System.out.println("### index_user test");
 		
 		mockMvc.perform(get("/"))
-//			.andDo(print())
 			.andExpect(status().isOk())
 		;
 	}
 	
 	@Test
 	@WithUser
-	@Order(2)
 	public void admin_user() throws Exception {
 		System.out.println("### admin_user test");
 		
 		mockMvc.perform(get("/admin"))
-//			.andDo(print())
 			.andExpect(status().isForbidden())
 		;
 	}
 	
 	@Test
-	@Order(2)
 	@WithMockUser(username = "joonAdmin", roles = "ADMIN")
 	public void admin_admin() throws Exception {
 		System.out.println("### admin_admin test");
 		mockMvc.perform(get("/admin"))
-//			.andDo(print())
 			.andExpect(status().isOk())
 		;
 	}
 	
 	@Test
-	@Order(2)
-	public void login() throws Exception{
+	@Transactional
+	public void login_success() throws Exception{
 		System.out.println("### login test");
-		Account user = accountService.selectOneUser(userName);
+		Account user = addUser(); //accountService.selectOneUser(userName);
 		mockMvc.perform(formLogin().user(user.getUserName()).password(password))
 				.andExpect(authenticated())
 		;
@@ -110,10 +98,21 @@ class AccountControllerTest {
 	}
 	
 	@Test
-	@Order(3)
+	@Transactional
+	public void login_success2() throws Exception{
+		System.out.println("### login test");
+		Account user = addUser();
+		mockMvc.perform(formLogin().user(user.getUserName()).password(password))
+				.andExpect(authenticated())
+		;
+				
+	}
+	
+	@Test
+	@Transactional
 	public void login_fail() throws Exception{
 		System.out.println("### login_fail test");
-		Account user = accountService.selectOneUser(userName);
+		Account user = addUser(); //accountService.selectOneUser(userName);
 		mockMvc.perform(formLogin().user(user.getUserName()).password("wrongpwd"))
 				.andExpect(unauthenticated())
 		;
