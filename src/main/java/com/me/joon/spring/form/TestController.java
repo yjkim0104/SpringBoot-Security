@@ -30,7 +30,7 @@ public class TestController {
 	@GetMapping("/dashboard")
 	public String dashboard(Model model, Principal principal) {
 		model.addAttribute("msg", "Hello " + principal.getName());
-		
+				
 		return "dashboard";
 	}
 	
